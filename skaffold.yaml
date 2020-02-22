@@ -1,0 +1,11 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+metadata:
+  name: osso
+build:
+  artifacts:
+  - image: registry.dev.scimmia.net/osso
+deploy:
+  kubectl:
+    manifests:
+    - k8s/*.yml

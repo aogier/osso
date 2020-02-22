@@ -1,0 +1,33 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+    app: osso
+  name: osso
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: osso
+  template:
+    metadata:
+      labels:
+        app: osso
+      name: osso
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000    
+      containers:
+      - image: registry.dev.scimmia.net/osso:latest
+        name: osso
+        env:
+          - name: DOMAIN
+            value: scimmia.net
+          - name: FORWARDED_ALLOW_IPS
+            value: "*"
+          - name: COOKIE_SECRET
+            value: changeme

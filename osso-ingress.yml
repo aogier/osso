@@ -1,0 +1,45 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+ name: osso
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+#  selector:
+#    app: osso
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: osso
+subsets:
+- addresses:
+  - ip: 192.168.1.132
+  ports:
+  - port: 8000
+    protocol: TCP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: digitalocean
+    nginx.ingress.kubernetes.io/proxy-body-size: 3000m
+  labels:
+    app: osso
+  name: osso
+spec:
+  rules:
+  - host: osso.dev.scimmia.net
+    http:
+      paths:
+      - backend:
+          serviceName: osso
+          servicePort: 80
+        path: /
+  tls:
+  - hosts:
+    - osso.dev.scimmia.net
+    secretName: osso.dev.scimmia.net
