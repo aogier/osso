@@ -5,14 +5,12 @@ Created on 17 feb 2020
 '''
 
 import logging
-from urllib.parse import urlparse
 
 from authlib.integrations.starlette_client import OAuth
 from starlette.applications import Starlette
 from starlette.config import Config
-from starlette.middleware.sessions import SessionMiddleware
 from starlette.requests import Request
-from starlette.responses import JSONResponse, Response, RedirectResponse
+from starlette.responses import Response, RedirectResponse
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 from starlette.templating import Jinja2Templates
@@ -81,10 +79,6 @@ async def login(request):
 
 async def auth(request):
 
-    logging.critical(f'SESSION: {request.session}')
-
-#     request.session['_google_authlib_redirect_uri_'] = request.url_for('auth')
-
     logging.critical(request.headers)
     token = await oauth.google.authorize_access_token(request)
     user = await oauth.google.parse_id_token(request, token)
@@ -95,19 +89,11 @@ async def auth(request):
 async def auth_form(request: Request):
 
     if request.method == 'GET':
-        logging.critical(request.headers)
-        logging.critical(request.session)
-
         return templates.TemplateResponse('Login_v5/index.html', {'request': request})
 
-    else:
-        form_data = await request.form()
-        request.session['username'] = form_data['username']
-        return Response('asd')
-
-#     request.session['user'] = 'ciao'
-#
-#     return RedirectResponse(request.query_params[NGINX_QUERY_PARAM])
+    form_data = await request.form()
+    request.session['username'] = form_data['username']
+    return Response()
 
 
 async def logout(request: Request):
