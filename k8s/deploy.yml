@@ -20,7 +20,7 @@ spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 3000
-        fsGroup: 2000    
+        fsGroup: 2000
       containers:
       - image: registry.dev.scimmia.net/osso:latest
         name: osso
@@ -31,3 +31,14 @@ spec:
             value: "*"
           - name: COOKIE_SECRET
             value: changeme
+---
+kind: Service
+apiVersion: v1
+metadata:
+ name: osso
+spec:
+  ports:
+    - port: 80
+      targetPort: 8000
+  selector:
+    app: osso

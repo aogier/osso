@@ -45,7 +45,7 @@ jwt_secret:
 
 totp:
   issuer_template: ciaone
-  
+
 '''
 
 
@@ -72,6 +72,8 @@ async def login(request):
 
     redirect_uri = request.url_for('auth')
 
+    request.session['redirect'] = request.query_params["rd"]
+
     logging.critical(f'LOGIN REDIR TO {redirect_uri}')
 
     return await oauth.google.authorize_redirect(request, redirect_uri)
@@ -80,14 +82,18 @@ async def login(request):
 async def auth(request):
 
     logging.critical(request.headers)
+    logging.critical(request.session)
+    redirect = request.session.setdefault('redirect', '/')
+    del request.session['redirect']
     token = await oauth.google.authorize_access_token(request)
     user = await oauth.google.parse_id_token(request, token)
     request.session['user'] = dict(user)
-    return RedirectResponse(url='/')
+    return RedirectResponse(url=redirect)
 
 
 async def auth_form(request: Request):
 
+    logging.critical(request.session)
     if request.method == 'GET':
         return templates.TemplateResponse('Login_v5/index.html', {'request': request})
 
@@ -98,8 +104,8 @@ async def auth_form(request: Request):
 
 async def logout(request: Request):
 
-    del request.session['user']
-    return Response()
+    request.scope['session'] = {}
+    return RedirectResponse(url='/')
 
 
 async def verify(request: Request):

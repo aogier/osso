@@ -2,10 +2,10 @@ ARG PYTHON_BASE_IMAGE_BUILD=3.7-alpine
 ARG PYTHON_BASE_IMAGE=3.7-slim
 FROM python:${PYTHON_BASE_IMAGE_BUILD} as build
 
-COPY poetry.lock pyproject.toml ./
-
 RUN apk add curl \
     && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
+
+COPY poetry.lock pyproject.toml ./
 
 RUN . $HOME/.poetry/env \
     && poetry export -f requirements.txt > /tmp/requirements.txt

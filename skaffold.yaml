@@ -5,6 +5,10 @@ metadata:
 build:
   artifacts:
   - image: registry.dev.scimmia.net/osso
+    docker:
+      cacheFrom:
+        - osso-build
+        - osso-image
 deploy:
   kubectl:
     manifests:
